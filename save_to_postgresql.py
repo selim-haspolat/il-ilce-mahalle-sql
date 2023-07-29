@@ -6,13 +6,15 @@ excel_dosya_yolu = './il-ilce-mahalle.xlsx'
 
 # Excel verilerini bir DataFrame'e yükleyin ve PK sütunundaki 0 ile başlayanları düzeltin
 df = pd.read_excel(excel_dosya_yolu)
-df['PK'] = df['PK'].apply(lambda x: str(x).lstrip('0') if str(x).startswith('0') else x)
+
+# Format PK values to be 5 characters long with leading zeros
+df['PK'] = df['PK'].apply(lambda x: str(x).zfill(5))
 
 # PostgreSQL veritabanı bağlantısı için gerekli bilgiler
-db_host = 'host'
-db_name = 'name'
-db_user = 'user'
-db_password = 'password'
+db_host = 'db_host'
+db_name = 'db_name'
+db_user = 'db_user'
+db_password = 'db_password'
 
 # PostgreSQL veritabanına bağlanın
 conn = psycopg2.connect(
@@ -26,25 +28,25 @@ conn = psycopg2.connect(
 cursor = conn.cursor()
 
 # İl tablosunu oluşturun ve verileri aktarın
-cursor.execute('CREATE TABLE IF NOT EXISTS il (id SERIAL PRIMARY KEY, il_ad VARCHAR)')
-for il_ad in df['il'].unique():
-    cursor.execute('INSERT INTO il (il_ad) VALUES (%s)', (il_ad,))
+cursor.execute('CREATE TABLE IF NOT EXISTS il (id SERIAL PRIMARY KEY, il VARCHAR)')
+for il in df['il'].unique():
+    cursor.execute('INSERT INTO il (il) VALUES (%s)', (il,))
 
 # İlçe tablosunu oluşturun ve verileri aktarın
-cursor.execute('CREATE TABLE IF NOT EXISTS ilce (id SERIAL PRIMARY KEY, ilce_ad VARCHAR, il_id INTEGER)')
+cursor.execute('CREATE TABLE IF NOT EXISTS ilce (id SERIAL PRIMARY KEY, ilce VARCHAR, il_id INTEGER)')
 for index, row in df[['ilçe', 'il']].drop_duplicates().iterrows():
-    ilce_ad, il_ad = row
-    cursor.execute('SELECT id FROM il WHERE il_ad = %s', (il_ad,))
+    ilce, il = row
+    cursor.execute('SELECT id FROM il WHERE il = %s', (il,))
     il_id = cursor.fetchone()[0]
-    cursor.execute('INSERT INTO ilce (ilce_ad, il_id) VALUES (%s, %s)', (ilce_ad, il_id))
+    cursor.execute('INSERT INTO ilce (ilce, il_id) VALUES (%s, %s)', (ilce, il_id))
 
 # Mahalle tablosunu oluşturun ve verileri aktarın
-cursor.execute('CREATE TABLE IF NOT EXISTS mahalle (id SERIAL PRIMARY KEY, mahalle_ad VARCHAR, ilce_id INTEGER, PK VARCHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS mahalle (id SERIAL PRIMARY KEY, mahalle VARCHAR, ilce_id INTEGER, PK VARCHAR)')
 for index, row in df[['Mahalle', 'ilçe', 'PK']].drop_duplicates().iterrows():
-    mahalle_ad, ilce_ad, PK = row
-    cursor.execute('SELECT id FROM ilce WHERE ilce_ad = %s', (ilce_ad,))
+    mahalle, ilce, PK = row
+    cursor.execute('SELECT id FROM ilce WHERE ilce = %s', (ilce,))
     ilce_id = cursor.fetchone()[0]
-    cursor.execute('INSERT INTO mahalle (mahalle_ad, ilce_id, PK) VALUES (%s, %s, %s)', (mahalle_ad, ilce_id, PK))
+    cursor.execute('INSERT INTO mahalle (mahalle, ilce_id, PK) VALUES (%s, %s, %s)', (mahalle, ilce_id, PK))
 
 # Veritabanı değişikliklerini kaydedin ve bağlantıyı kapatın
 conn.commit()
