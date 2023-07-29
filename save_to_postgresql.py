@@ -28,25 +28,25 @@ conn = psycopg2.connect(
 cursor = conn.cursor()
 
 # İl tablosunu oluşturun ve verileri aktarın
-cursor.execute('CREATE TABLE IF NOT EXISTS il (id SERIAL PRIMARY KEY, il VARCHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS il (id SERIAL PRIMARY KEY, name VARCHAR)')
 for il in df['il'].unique():
-    cursor.execute('INSERT INTO il (il) VALUES (%s)', (il,))
+    cursor.execute('INSERT INTO il (name) VALUES (%s)', (il,))
 
 # İlçe tablosunu oluşturun ve verileri aktarın
-cursor.execute('CREATE TABLE IF NOT EXISTS ilce (id SERIAL PRIMARY KEY, ilce VARCHAR, il_id INTEGER)')
+cursor.execute('CREATE TABLE IF NOT EXISTS ilce (id SERIAL PRIMARY KEY, name VARCHAR, il_id INTEGER)')
 for index, row in df[['ilçe', 'il']].drop_duplicates().iterrows():
     ilce, il = row
-    cursor.execute('SELECT id FROM il WHERE il = %s', (il,))
+    cursor.execute('SELECT id FROM il WHERE name = %s', (il,))
     il_id = cursor.fetchone()[0]
-    cursor.execute('INSERT INTO ilce (ilce, il_id) VALUES (%s, %s)', (ilce, il_id))
+    cursor.execute('INSERT INTO ilce (name, il_id) VALUES (%s, %s)', (ilce, il_id))
 
 # Mahalle tablosunu oluşturun ve verileri aktarın
-cursor.execute('CREATE TABLE IF NOT EXISTS mahalle (id SERIAL PRIMARY KEY, mahalle VARCHAR, ilce_id INTEGER, PK VARCHAR)')
+cursor.execute('CREATE TABLE IF NOT EXISTS mahalle (id SERIAL PRIMARY KEY, name VARCHAR, ilce_id INTEGER, PK VARCHAR)')
 for index, row in df[['Mahalle', 'ilçe', 'PK']].drop_duplicates().iterrows():
     mahalle, ilce, PK = row
-    cursor.execute('SELECT id FROM ilce WHERE ilce = %s', (ilce,))
+    cursor.execute('SELECT id FROM ilce WHERE name = %s', (ilce,))
     ilce_id = cursor.fetchone()[0]
-    cursor.execute('INSERT INTO mahalle (mahalle, ilce_id, PK) VALUES (%s, %s, %s)', (mahalle, ilce_id, PK))
+    cursor.execute('INSERT INTO mahalle (name, ilce_id, PK) VALUES (%s, %s, %s)', (mahalle, ilce_id, PK))
 
 # Veritabanı değişikliklerini kaydedin ve bağlantıyı kapatın
 conn.commit()
