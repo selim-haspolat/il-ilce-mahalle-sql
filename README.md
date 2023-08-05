@@ -1,15 +1,39 @@
 # ptt-il-ilce-mahalle-sql
 
-güncel verileri almak için excel dosyasını burdan indirebilirsiniz https://postakodu.ptt.gov.tr/
+Güncel verileri almak için excel dosyasını burdan indirebilirsiniz https://postakodu.ptt.gov.tr/ 
 
-## Kullanım
+# Repo clone
+```console
+git clone https://github.com/selim-haspolat/ptt-il-ilce-mahalle-sql.git
+```
 
-1. python -m venv env 
-2. source env/Scripts/activate    -cihazdan cihaza farklılık gösterir -
+# Kurulum
+Local e kurmak istemeyenler indirmeye işlemine geçebilir
+```console
+python -m venv env
+```
+```console
+source env/Scripts/activate 
+```
 
--venv a geçmedende indirme işlemine geçebilirsiniz-
+Gerekli paketleri indirme
+```console
+pip install -r requirements.txt
+```
+# Kullanım
+Bir database oluşturup save_to_postgresql.py dosyasındaki postgresql bilgilerini doldurun
 
-3. pip install -r requirements.txt
+### Örnek
+```py
+db_host = '127.0.0.1'
+db_name = 'il_ilce_mahalle' 
+db_user = 'postgres'
+db_password = 'şifrem'
+```
 
-4. python save_to_postgresql.py    -sql databse e kaydetmek için bunu-
-5. python save_to_sql_files.py    -sql dosyalarını oluşturmak için bunu-
+Kodu Çalıştırma
+```console
+python save_to_postgresql.py
+```
+
+
