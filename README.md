@@ -31,7 +31,7 @@ db_user = 'postgres'
 db_password = 'şifrem'
 ```
 
-Kodu Çalıştırma
+Kodu Çalıştır
 ```console
 python save_to_postgresql.py
 ```
