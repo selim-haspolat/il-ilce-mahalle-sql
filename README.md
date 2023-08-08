@@ -6,6 +6,9 @@ Güncel verileri almak için excel dosyasını burdan indirebilirsiniz https://p
 ```console
 git clone https://github.com/selim-haspolat/ptt-il-ilce-mahalle-sql.git
 ```
+```console
+cd ptt-il-ilce-mahalle-sql
+```
 
 # Kurulum
 Local e kurmak istemeyenler indirmeye işlemine geçebilir
